@@ -1,0 +1,265 @@
+package Rent_A_Car_System;
+
+public class Car {
+	private String plaka;
+	private double gunlukUcret;
+	private int kilometre;
+	private boolean isMusait;
+	private boolean bakimGerekiyorMu;
+	public Car(String plaka, double gunlukUcret2 ) {
+		
+		this.plaka = plaka;
+		this.gunlukUcret = gunlukUcret2;
+		this.kilometre = kilometre=0;
+		this.isMusait = isMusait=true;
+		this.bakimGerekiyorMu = bakimGerekiyorMu=false;
+	}
+	
+public double kiralamaUcretiHesapla(int gun) {
+	return gun*gunlukUcret;
+}
+
+public boolean aracKirala() {
+	if(isMusait && !bakimGerekiyorMu){
+		isMusait=false;
+		System.out.println(plaka+" Kiralandı");
+		return true;
+		}else {
+			System.out.println("Hata! "+plaka+" Kiralanamaz (Bakım: "+bakimGerekiyorMu+" , Müsait: "+isMusait+")");
+			return false;
+		}
+	
+}
+
+public void araciTeslimAl(int yapilanKm) {
+	
+	this.kilometre+=yapilanKm;
+	this.isMusait=true;
+	if(this.kilometre%10000<yapilanKm) {
+		this.bakimGerekiyorMu=true;
+		System.out.println(plaka+" Bakım zamanı geldi");
+	}
+	
+}
+
+public void bakımYap() {
+	this.bakimGerekiyorMu=false;
+	System.out.println(plaka+" Bakımı yapıldı");
+}
+
+public String getPlaka() {
+	return plaka;
+}
+
+public double getGunlukUcret() {
+	return gunlukUcret;
+}
+
+public int getKilometre() {
+	return kilometre;
+}
+
+public boolean isMusait() {
+	return isMusait;
+}
+
+public boolean isBakimGerekiyorMu() {
+	return bakimGerekiyorMu;
+}
+
+public void setPlaka(String plaka) {
+	this.plaka = plaka;
+}
+
+public void setGunlukUcret(int gunlukUcret) {
+	this.gunlukUcret = gunlukUcret;
+}
+
+public void setKilometre(int kilometre) {
+	this.kilometre = kilometre;
+}
+
+public void setMusait(boolean isMusait) {
+	this.isMusait = isMusait;
+}
+
+public void setBakimGerekiyorMu(boolean bakimGerekiyorMu) {
+	this.bakimGerekiyorMu = bakimGerekiyorMu;
+}
+}
+
+
+
+
+public class SportsCar extends Car{
+
+	public SportsCar(String plaka, double gunlukUcret) {
+		super(plaka, gunlukUcret);
+		
+	}
+
+	@Override
+	public double kiralamaUcretiHesapla(int gun) {
+		// TODO Auto-generated method stub
+		return (super.kiralamaUcretiHesapla(gun)*2)+500;
+	}
+
+	@Override
+	public void araciTeslimAl(int yapilanKm) {
+		
+		super.araciTeslimAl(yapilanKm);
+		if(getKilometre()%3000>yapilanKm&&!isBakimGerekiyorMu()) {
+			System.out.println(getPlaka() +"Aracın bakım zamanı geldi...");
+			setBakimGerekiyorMu(true);
+		}
+	}
+	
+
+}
+
+
+public class Truck extends Car{
+
+	public Truck(String plaka, double gunlukUcret2) {
+		super(plaka, gunlukUcret2);
+		
+	}
+
+	
+	public double kiralamaUcretiHesapla(int gun) {
+		if(gun>7) {
+			return (super.kiralamaUcretiHesapla(gun)*0.8);
+		}
+		return super.kiralamaUcretiHesapla(gun);
+	}
+
+	@Override
+	public void araciTeslimAl(int yapilanKm) {
+		// TODO Auto-generated method stub
+		super.araciTeslimAl(yapilanKm);
+	}
+
+	
+}
+
+
+
+import java.util.ArrayList;
+import java.util.Scanner;
+
+public class RentalSystem {
+
+	public static void main(String[] args) {
+		Scanner input = new Scanner(System.in);
+		ArrayList<Car> filo = new ArrayList<>();
+		
+		filo.add(new Car("38 ABC 38",5800));
+		filo.add(new SportsCar("34 AFG 355",13350));
+		filo.add(new Truck("29 kf 318",7900));
+		
+		System.out.println("--- SİSTEM BAŞLATILDI ---\n");
+		String islemler = "Araç kiralama yapmak için ekrana 100 giriniz\n"
+				        + "Araç teslim etmekiçin ekrana 101 giriniz";
+				        
+		String durumlar1="Standart araba ücreti 5800TL seçmek için ekrana 0 giriniz\n"
+				      + "Lüks araba ücreti 13350TL seçmek içim ekrana 1 giriniz\n"
+				      + "Kamyonet ücreti 7900TL seçmek için ekrana 2 giriniz";
+		String durumlar2 = "Standart arabayı teslim etmek için ekrana 00 giriniz\n"
+				         + "Lüks arabayı teslim etmek için ekrana 11 giriniz\n"
+				         + "Kamyoneti teslim etmek için ekrana 22 giriniz";
+
+		while(true) {
+			System.out.println(islemler);
+			int secim1=input.nextInt();
+			if(secim1==100) {
+				System.out.println(durumlar1);
+				int secim2=input.nextInt();
+				switch(secim2) {
+				case 0:
+					System.out.println("Kaç günlüğüne kiralamak istediğinizi giriniz");
+					int gun = input.nextInt();
+					double fiyat = filo.get(0).kiralamaUcretiHesapla(gun);
+					System.out.println("Toplam ücret: "+fiyat+"TL");
+					if(filo.get(0).aracKirala()) {
+						System.out.println("Araç kiralama başarılı...");
+						System.out.println("-------------------------");
+					}
+					break;
+				case 1:
+					System.out.println("Kaç günlüğüne kiralamak istediğinizi giriniz");
+					int gun1 = input.nextInt();
+					double fiyat1 = filo.get(1).kiralamaUcretiHesapla(gun1);
+					System.out.println("Toplam ücret: "+fiyat1+"TL");
+					if(filo.get(1).aracKirala()) {
+						System.out.println("Araç kiralama başarılı...");
+						System.out.println("-------------------------");
+				}
+					break;
+				case 2:
+					System.out.println("Kaç günlüğüne kiralamak istediğinizi giriniz");
+					int gun2 = input.nextInt();
+					double fiyat2 = filo.get(2).kiralamaUcretiHesapla(gun2);
+					System.out.println("Toplam ücret: "+fiyat2+"TL");
+					if(filo.get(2).aracKirala()) {
+						System.out.println("Araç kiralama başarılı...");
+						System.out.println("-------------------------");
+					
+			}
+					break;
+		}
+	}else if(secim1==101){
+		System.out.println(durumlar2);
+		int secim2=input.nextInt();
+		switch(secim2) {
+		case 00:
+			if(filo.get(0).isMusait()) {
+			System.out.println("Lütfen araçlayaptığınız kilometreyi yazınız:");
+			int km=input.nextInt();
+			
+			filo.get(0).araciTeslimAl(km);
+			System.out.println("Araç teslim alındı iyi günler dileriz...");
+			}else {
+				System.out.println("Yanlış araç seçtiniz!!! Bu araç daha önce kiralanmadı...");
+			}
+			break;
+		case 11:
+			if(filo.get(0).isMusait()) {
+			System.out.println("Lütfen araçlayaptığınız kilometreyi yazınız:");
+			int km1=input.nextInt();
+			filo.get(1).araciTeslimAl(km1);
+			System.out.println("Araç teslim alındı iyi günler dileriz...");
+			}else {
+				System.out.println("Yanlış araç seçtiniz!!! Bu araç daha önce kiralanmadı...");
+			}
+			break;
+		case 22:
+			if(filo.get(0).isMusait()) {
+			System.out.println("Lütfen araçlayaptığınız kilometreyi yazınız:");
+			int km2=input.nextInt();
+			filo.get(2).araciTeslimAl(km2);
+			System.out.println("Araç teslim alındı iyi günler dileriz...");
+		}else {
+			System.out.println("Yanlış araç seçtiniz!!! Bu araç daha önce kiralanmadı...");
+		}
+			break;
+}
+	}
+		
+			
+		System.out.println("\n--- FİLO DURUM KONTROLÜ ---");
+		
+		for(Car c :filo) {
+			if(c.isBakimGerekiyorMu()) {
+				System.out.println("Dikkat! "+c.getPlaka()+" servise gönderiliyor..");
+				c.bakımYap();
+						
+			}else {
+				System.out.println(c.getPlaka()+" Araç kullanıma  hazır Kilometre:"+c.getKilometre());
+			}
+		}
+		System.out.println("-------------------------");
+		}
+	}
+}
+	
+
